@@ -1,0 +1,79 @@
+PID=1150020
+torch=2.7.1+cu126 CUDA=12.6
+device=NVIDIA GeForce GTX 1070 capability=(6, 1)
+dtype_request=float16
+GPU before load:
+NVIDIA GeForce GTX 1070, 580.178.04, 8192 MiB, 5712 MiB, 2393 MiB, 22 %
+[phonon-cuda] loading Phonon-2 from $REPO/.cache/phonon/models/phonon-2 ...
+[phonon-cuda] loaded in 40.6s on NVIDIA GeForce GTX 1070 (path=dense, float16, CUDA graphs K=16, pad bucket 5 s; warmed 1 bucket(s) in 0.7s)
+model_dir=$REPO/.cache/phonon/models/phonon-2
+model_resolve_s=0.0013
+engine_load_s=40.5561 engine_init_wall_s=46.4276 warmup_s=0.7268
+model_parameter_devices=['cuda:0'] model_parameter_dtypes=['torch.float16']
+model_cuda_allocated_mib=1221.25
+nvidia-smi benchmark process memory after load:
+1150020, benchmark process, 1404 MiB
+
+Timed inference runs (each synchronized before and after):
+{
+  "first": {
+    "label": "first_audio_run_graph_capture",
+    "transcript": "And so my fellow Americans, ask not what your country can do for you, ask what you can do for your country.",
+    "inference_s": 0.28577,
+    "rtf": 0.02598
+  },
+  "steady": [
+    {
+      "label": "timed_1",
+      "transcript": "And so my fellow Americans, ask not what your country can do for you, ask what you can do for your country.",
+      "inference_s": 0.14364,
+      "rtf": 0.01306
+    },
+    {
+      "label": "timed_2",
+      "transcript": "And so my fellow Americans, ask not what your country can do for you, ask what you can do for your country.",
+      "inference_s": 0.14298,
+      "rtf": 0.013
+    },
+    {
+      "label": "timed_3",
+      "transcript": "And so my fellow Americans, ask not what your country can do for you, ask what you can do for your country.",
+      "inference_s": 0.14336,
+      "rtf": 0.01303
+    }
+  ]
+}
+
+Profiler CUDA operator table (separate untimed run):
+-------------------------------------------------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------
+                                                   Name    Self CPU %      Self CPU   CPU total %     CPU total  CPU time avg     Self CUDA   Self CUDA %    CUDA total  CUDA time avg    # of Calls
+-------------------------------------------------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------
+                                               aten::mm         1.68%       2.314ms         2.55%       3.510ms      16.250us      47.790ms        33.36%      47.790ms     221.251us           216
+                                  hgemm_32x32x32_NT_vec         0.00%       0.000us         0.00%       0.000us       0.000us      47.790ms        33.36%      47.790ms     221.251us           216
+                     aten::_efficient_attention_forward         0.14%     195.451us         0.39%     537.816us      22.409us      35.532ms        24.80%      35.532ms       1.481ms            24
+fmha_cutlassF_f16_aligned_32x128_rf_sm50(PyTorchMemE...         0.00%       0.000us         0.00%       0.000us       0.000us      35.532ms        24.80%      35.532ms       1.481ms            24
+                                aten::cudnn_convolution         0.78%       1.078ms         1.11%       1.529ms      29.978us      10.446ms         7.29%      10.446ms     204.826us            51
+void precomputed_convolve_sgemm<__half, 512, 6, 7, 4...         0.00%       0.000us         0.00%       0.000us       0.000us       9.589ms         6.69%       9.589ms     199.780us            48
+void gemv2T_kernel_val<int, int, __half, __half, __h...         0.00%       0.000us         0.00%       0.000us       0.000us       6.614ms         4.62%       6.614ms      20.668us           320
+                                aten::_conv_depthwise2d         0.13%     172.316us         0.37%     505.957us      19.460us       6.086ms         4.25%       6.086ms     234.094us            26
+void gemv2T_kernel_val<int, int, __half, __half, __h...         0.00%       0.000us         0.00%       0.000us       0.000us       5.388ms         3.76%       5.388ms      33.672us           160
+                                aten::native_layer_norm         0.82%       1.123ms         2.15%       2.955ms      24.629us       3.575ms         2.50%       3.575ms      29.789us           120
+void at::native::(anonymous namespace)::vectorized_l...         0.00%       0.000us         0.00%       0.000us       0.000us       3.575ms         2.50%       3.575ms      29.789us           120
+void at::native::(anonymous namespace)::conv_depthwi...         0.00%       0.000us         0.00%       0.000us       0.000us       3.533ms         2.47%       3.533ms     147.193us            24
+void at::native::vectorized_elementwise_kernel<4, at...         0.00%       0.000us         0.00%       0.000us       0.000us       3.000ms         2.09%       3.000ms       3.788us           792
+void at::native::(anonymous namespace)::conv_depthwi...         0.00%       0.000us         0.00%       0.000us       0.000us       2.554ms         1.78%       2.554ms       1.277ms             2
+                                              aten::add         1.03%       1.423ms         1.65%       2.263ms      13.470us       2.367ms         1.65%       2.367ms      14.090us           168
+void at::native::elementwise_kernel<128, 4, at::nati...         0.00%       0.000us         0.00%       0.000us       0.000us       2.318ms         1.62%       2.318ms      30.905us            75
+                                              aten::mul         0.55%     749.977us         0.87%       1.191ms      15.264us       2.035ms         1.42%       2.035ms      26.089us            78
+                                             aten::silu         0.44%     601.385us         0.71%     981.197us      13.628us       1.665ms         1.16%       1.665ms      23.131us            72
+void at::native::vectorized_elementwise_kernel<4, at...         0.00%       0.000us         0.00%       0.000us       0.000us       1.665ms         1.16%       1.665ms      23.131us            72
+void at::native::vectorized_elementwise_kernel<4, at...         0.00%       0.000us         0.00%       0.000us       0.000us       1.630ms         1.14%       1.630ms       3.397us           480
+-------------------------------------------------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------
+Self CPU time total: 137.493ms
+Self CUDA time total: 143.265ms
+
+
+GPU after inference:
+NVIDIA GeForce GTX 1070, 580.178.04, 8192 MiB, 7196 MiB, 909 MiB, 2 %
+nvidia-smi benchmark process memory after inference:
+1150020, benchmark process, 1522 MiB
